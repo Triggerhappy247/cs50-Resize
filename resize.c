@@ -99,23 +99,22 @@ int main(int argc, char *argv[])
                 }
             }
         
-            for(float l = 0; l < scale; l++)
+            for(int l = 0; l < scale; l++)
             {
                 fwrite(row2, sizeof(RGBTRIPLE), bi2.biWidth, outptr);
+                // add padding after writing each row
+                for (int k = 0; k < padding2; k++)
+                {
+                    fputc(0x00, outptr);
+                }
             }
             // skip over padding, if any
             fseek(inptr, padding, SEEK_CUR);
-
-            // then add it back (to demonstrate how)
-            for (int k = 0; k < padding2; k++)
-            {
-                fputc(0x00, outptr);
-            }
         }
     }
     else
     {
-        printf("Still working on that part");
+     
     }
 
     // close infile
