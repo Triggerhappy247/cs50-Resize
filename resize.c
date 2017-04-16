@@ -8,6 +8,8 @@
 
 #include "bmp.h"
 
+
+
 int main(int argc, char *argv[])
 {
     // ensure proper usage
@@ -79,23 +81,29 @@ int main(int argc, char *argv[])
 
     // determine padding for scanlines
     int padding = (4 - (bi.biWidth * sizeof(RGBTRIPLE)) % 4) % 4;
-
+    
+    // Declare a 2 scanlines of RGBTriples
+    RGBTRIPLE *row1 = (RGBTRIPLE*) malloc(bi.biWidth*sizeof(RGBTRIPLE));
+    RGBTRIPLE *row2 = (RGBTRIPLE*) malloc(bi2.biWidth*sizeof(RGBTRIPLE));
+    int m;
     // iterate over infile's scanlines
     for (int i = 0, biHeight = abs(bi.biHeight); i < biHeight; i++)
     {
-        // iterate over pixels in scanline
+        // Read one entire row from image
+        fread(row1, sizeof(RGBTRIPLE), bi.biWidth, inptr);
+        m = 0;
         for (int j = 0; j < bi.biWidth; j++)
         {
-            // temporary storage
-            RGBTRIPLE triple;
-
-            // read RGB triple from infile
-            fread(&triple, sizeof(RGBTRIPLE), 1, inptr);
-
-            // write RGB triple to outfile
-            fwrite(&triple, sizeof(RGBTRIPLE), 1, outptr);
+            for(float l = 0; l < scale; l++)
+            {
+                row2[m++] = row1[j];
+            }
         }
-
+        
+        for(float l = 0; l < scale; l++)
+        {
+            fwrite(row2, sizeof(RGBTRIPLE), bi2.biWidth, outptr);
+        }
         // skip over padding, if any
         fseek(inptr, padding, SEEK_CUR);
 
@@ -111,6 +119,10 @@ int main(int argc, char *argv[])
 
     // close outfile
     fclose(outptr);
+    
+    // Free memory
+    free(row1);
+    free(row2);
 
     // success
     return 0;
