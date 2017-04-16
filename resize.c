@@ -63,7 +63,7 @@ int main(int argc, char *argv[])
     BITMAPINFOHEADER bi2 = bi;
     
     bi2.biWidth = fabs(bi.biWidth * scale);
-    bi2.biHeight = fabs(bi.biHeight * scale);
+    bi2.biHeight = - fabs(bi.biHeight * scale);
     int padding2 = (4 - (bi2.biWidth * sizeof(RGBTRIPLE)) % 4) % 4;
     bi2.biSizeImage = ((sizeof(RGBTRIPLE) * bi2.biWidth) + padding2)
                       * abs(bi2.biHeight);
@@ -100,7 +100,7 @@ int main(int argc, char *argv[])
         fseek(inptr, padding, SEEK_CUR);
 
         // then add it back (to demonstrate how)
-        for (int k = 0; k < padding; k++)
+        for (int k = 0; k < padding2; k++)
         {
             fputc(0x00, outptr);
         }
