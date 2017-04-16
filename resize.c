@@ -8,8 +8,6 @@
 
 #include "bmp.h"
 
-
-
 int main(int argc, char *argv[])
 {
     // ensure proper usage
@@ -20,7 +18,6 @@ int main(int argc, char *argv[])
     }
     // remember scaling size
     float scale = atof(argv[1]);
-    printf("%f",scale);
     // remember filenames
     char *infile = argv[2];
     char *outfile = argv[3];
@@ -87,31 +84,38 @@ int main(int argc, char *argv[])
     RGBTRIPLE *row2 = (RGBTRIPLE*) malloc(bi2.biWidth*sizeof(RGBTRIPLE));
     int m;
     // iterate over infile's scanlines
-    for (int i = 0, biHeight = abs(bi.biHeight); i < biHeight; i++)
+    if(floor(scale) == scale)
     {
-        // Read one entire row from image
-        fread(row1, sizeof(RGBTRIPLE), bi.biWidth, inptr);
-        m = 0;
-        for (int j = 0; j < bi.biWidth; j++)
+        for (int i = 0, biHeight = abs(bi.biHeight); i < biHeight; i++)
         {
+            // Read one entire row from image
+            fread(row1, sizeof(RGBTRIPLE), bi.biWidth, inptr);
+            m = 0;
+            for (int j = 0; j < bi.biWidth; j++)
+            {
+                for(float l = 0; l < scale; l++)
+                {
+                    row2[m++] = row1[j];
+                }
+            }
+        
             for(float l = 0; l < scale; l++)
             {
-                row2[m++] = row1[j];
+                fwrite(row2, sizeof(RGBTRIPLE), bi2.biWidth, outptr);
+            }
+            // skip over padding, if any
+            fseek(inptr, padding, SEEK_CUR);
+
+            // then add it back (to demonstrate how)
+            for (int k = 0; k < padding2; k++)
+            {
+                fputc(0x00, outptr);
             }
         }
-        
-        for(float l = 0; l < scale; l++)
-        {
-            fwrite(row2, sizeof(RGBTRIPLE), bi2.biWidth, outptr);
-        }
-        // skip over padding, if any
-        fseek(inptr, padding, SEEK_CUR);
-
-        // then add it back (to demonstrate how)
-        for (int k = 0; k < padding2; k++)
-        {
-            fputc(0x00, outptr);
-        }
+    }
+    else
+    {
+        printf("Still working on that part");
     }
 
     // close infile
