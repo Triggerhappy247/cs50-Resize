@@ -112,7 +112,7 @@ int main(int argc, char *argv[])
             fseek(inptr, padding, SEEK_CUR);
         }
     }
-    else if (scale < 1)
+    /*else if (scale < 1)
     {
         int increment = fabs(1/scale);
         for (int i = 0, biHeight = abs(bi.biHeight); i < biHeight; i+=increment)
@@ -134,7 +134,7 @@ int main(int argc, char *argv[])
             fseek(inptr, padding, SEEK_CUR);
             fseek(inptr, (bi.biWidth * sizeof(RGBTRIPLE) + padding),SEEK_CUR);
         }
-    }
+    }*/
 
     // close infile
     fclose(inptr);
