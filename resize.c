@@ -4,6 +4,7 @@
        
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
 
 #include "bmp.h"
 
@@ -57,14 +58,24 @@ int main(int argc, char *argv[])
         return 4;
     }
     
-    //Modify FILEHEADER and INFOHEADER
+    // Create new FILEHEADER and INFOHEADER for new image
+    BITMAPFILEHEADER bf2 = bf;
+    BITMAPINFOHEADER bi2 = bi;
     
+    bi2.biWidth = fabs(bi.biWidth * scale);
+    bi2.biHeight = fabs(bi.biHeight * scale);
+    int padding2 = (4 - (bi2.biWidth * sizeof(RGBTRIPLE)) % 4) % 4;
+    bi2.biSizeImage = ((sizeof(RGBTRIPLE) * bi2.biWidth) + padding2)
+                      * abs(bi2.biHeight);
+    bf2.bfSize = bi2.biSizeImage 
+               + sizeof(BITMAPINFOHEADER)
+               + sizeof(BITMAPFILEHEADER);             
     
     // write outfile's BITMAPFILEHEADER
-    fwrite(&bf, sizeof(BITMAPFILEHEADER), 1, outptr);
+    fwrite(&bf2, sizeof(BITMAPFILEHEADER), 1, outptr);
 
     // write outfile's BITMAPINFOHEADER
-    fwrite(&bi, sizeof(BITMAPINFOHEADER), 1, outptr);
+    fwrite(&bi2, sizeof(BITMAPINFOHEADER), 1, outptr);
 
     // determine padding for scanlines
     int padding = (4 - (bi.biWidth * sizeof(RGBTRIPLE)) % 4) % 4;
