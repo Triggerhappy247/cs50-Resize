@@ -112,9 +112,29 @@ int main(int argc, char *argv[])
             fseek(inptr, padding, SEEK_CUR);
         }
     }
-    else
+    else if (scale < 1)
     {
-     
+        int increment = fabs(1/scale);
+        printf("%d",increment);
+        for (int i = 0, biHeight = abs(bi.biHeight); i < biHeight; i+=increment)
+        {
+            // Read one entire row from image
+            fread(row1, sizeof(RGBTRIPLE), bi.biWidth, inptr);
+            m = 0;
+            for (int j = 0; j < bi.biWidth; j+=increment)
+            {
+                row2[m++] = row1[j];
+            }
+            
+            fwrite(row2, sizeof(RGBTRIPLE), bi2.biWidth, outptr);
+                // add padding after writing each row
+                for (int k = 0; k < padding2; k++)
+                {
+                    fputc(0x00, outptr);
+                }
+            fseek(inptr, padding, SEEK_CUR);
+            fseek(inptr, (bi.biWidth * sizeof(RGBTRIPLE) + padding),SEEK_CUR);
+        }
     }
 
     // close infile
