@@ -115,7 +115,6 @@ int main(int argc, char *argv[])
     else if (scale < 1)
     {
         int increment = fabs(1/scale);
-        printf("%d",increment);
         for (int i = 0, biHeight = abs(bi.biHeight); i < biHeight; i+=increment)
         {
             // Read one entire row from image
